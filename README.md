@@ -1,5 +1,5 @@
 # Indie Comic Code
-================
+-----
 
 Hey there True Believers,
 
@@ -13,49 +13,51 @@ Thusly, here are some scripts to help speed that process up. Some may be .atn, s
 
 I am/was/will be making these to help myself and, hopefully, any independent comic creators to speed up their workflow.
 
-===============
+----
 
 # Photoshop Scripts
 ** Script 01** - *Place Illustrator Lettering file into Photoshop as a Smart Object*
+
 Reasoning: It's easier to draw vectors in Illustrator. Plus when I want to edit the Illustrator file, I can just double click it and it opens in Illustrator.
 
 # Illustrator Scripts
-** Script 01** - *Pull dialogue for Page X*
+** Script 01** - *Pull dialogue for PageX*
+
 Description: Prompts you for the page number, you get all the dialogue as individual text boxes and removes name and description, etc. Defaults to 'Comic Geek' font.
 
 ## File Structure
 All the scripts I've made thus far are dependent on the file sturure. I sort my directory as such:
 
 _assets
-: - Issue X Script.pdf
-: - Issue X Script.txt
-...
+ - Issue X Script.pdf
+ - Issue X Script.txt
+ - ...
 
 00-Scan
-: - 000-front-cover.tif
-: - 01.tif
-...
+ - 000-front-cover.tif
+ - 01.tif
+ - ...
 
 01-PSD
-: - 000-front-cover.psd
-: - 000-front-inside.psd
-: - 01.psd
-...
+ - 000-front-cover.psd
+ - 000-front-inside.psd
+ - 01.psd
+ - ...
 
 02-Lettering
-: 01.ai
-...
+ -  01.ai
+ - ...
 
 03-TIF-output
-...
+ - ...
 
 04-Comixology-output
-: - 000-font-cover.jpg
-...
+ - 000-font-cover.jpg
+ - ...
 
 05-PDF
-: - Comixology-version.pdf
-: - Print-version.pdf
+ - Comixology-version.pdf
+ - Print-version.pdf
 ...
 
 ## AI Action Todos
@@ -69,14 +71,12 @@ _assets
 - Format for 
 
 ## Script Todos
-======================
 - Pull dialogue for Page X
 - Convert TIFs to PDF
 - Convert Comixology to PDF
 - Comixology Submit Template Collection
 
 ## General Todo
-======================
 - Move Todos to Github Issues
 - Add Actions
 - Link to other Actions online
