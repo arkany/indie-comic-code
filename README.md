@@ -1,5 +1,4 @@
 # Indie Comic Code
------
 
 Hey there True Believers,
 
@@ -13,7 +12,6 @@ Thusly, here are some scripts to help speed that process up. Some may be .atn, s
 
 I am/was/will be making these to help myself and, hopefully, any independent comic creators to speed up their workflow.
 
-----
 
 # Photoshop Scripts
 ** Script 01** - *Place Illustrator Lettering file into Photoshop as a Smart Object*
@@ -60,10 +58,8 @@ _assets
  - Print-version.pdf
 ...
 
-## AI Action Todos
-- Update Script 01 - Create new page, place image from psd, add text from matching page.
-- 
-- 
+## AI Action Todos 
+ - Update Script 01: Create new page, place image from psd, add text from matching page.
 
 ## PS Action Todos
 - Format for LithoNinja
