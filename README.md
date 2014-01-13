@@ -14,12 +14,12 @@ I am/was/will be making these to help myself and, hopefully, any independent com
 
 
 # Photoshop Scripts
-** Script 01** - *Place Illustrator Lettering file into Photoshop as a Smart Object*
+**Script 01** - *Place Illustrator Lettering file into Photoshop as a Smart Object*
 
 Reasoning: It's easier to draw vectors in Illustrator. Plus when I want to edit the Illustrator file, I can just double click it and it opens in Illustrator.
 
 # Illustrator Scripts
-** Script 01** - *Pull dialogue for PageX*
+**Script 01** - *Pull dialogue for PageX*
 
 Description: Prompts you for the page number, you get all the dialogue as individual text boxes and removes name and description, etc. Defaults to 'Comic Geek' font.
 
