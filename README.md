@@ -14,6 +14,7 @@ I am/was/will be making these to help myself. Hopefully, any independent comic c
 
 
 ## Photoshop Scripts
+
 **Script 01** - *Place Illustrator Lettering file into Photoshop as a Smart Object*
 
 It's easier to draw vectors in Illustrator. Plus when I want to edit the Illustrator file, I can just double click it and it opens in Illustrator.
