@@ -64,7 +64,7 @@ See [`uxp-plugin/README.md`](uxp-plugin/README.md) for setup instructions.
 
 ## Required File Structure
 
-All scripts depend on this project folder layout:
+The legacy ExtendScript tools (`ps-code/01-placeAiInPsd.jsx` and `ai-code/page_dialogue.jsx`) depend on this project folder layout. The **UXP plugin does not require a fixed layout** — it uses a file picker to locate `script.txt` directly.
 
 ```
 <your project>/

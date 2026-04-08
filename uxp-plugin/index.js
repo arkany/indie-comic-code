@@ -141,19 +141,21 @@ function createWordBalloon() {
     ]};
 
     let tail;
-    if      (pointEnd[0] > pointBegin[0] && pointEnd[1] < pointBegin[1]) tail = balloonTail(doc, upperLeft,  50);
-    else if (pointEnd[0] < pointBegin[0] && pointEnd[1] < pointBegin[1]) tail = balloonTail(doc, upperRight, 50);
-    else if (pointEnd[0] > pointBegin[0] && pointEnd[1] > pointBegin[1]) tail = balloonTail(doc, lowerLeft, -50);
-    else if (pointEnd[0] < pointBegin[0] && pointEnd[1] > pointBegin[1]) tail = balloonTail(doc, lowerRight,-50);
+    if      (pointEnd[0] > pointBegin[0] && pointEnd[1] < pointBegin[1]) tail = balloonTail(doc, upperLeft,   50, myBlack, myWhite);
+    else if (pointEnd[0] < pointBegin[0] && pointEnd[1] < pointBegin[1]) tail = balloonTail(doc, upperRight,  50, myBlack, myWhite);
+    else if (pointEnd[0] > pointBegin[0] && pointEnd[1] > pointBegin[1]) tail = balloonTail(doc, lowerLeft,  -50, myBlack, myWhite);
+    else if (pointEnd[0] < pointBegin[0] && pointEnd[1] > pointBegin[1]) tail = balloonTail(doc, lowerRight, -50, myBlack, myWhite);
     else {
       ellipse.remove();
       return setStatus("balloon-status",
         "Line appears to be straight. Use a diagonal line.", "error");
     }
 
-    // Select both shapes and merge into a compound shape
-    ellipse.selected = true;
-    tail.selected    = true;
+    // Deselect source objects so only the new balloon shapes go into the compound merge
+    tf.selected       = false;
+    linePath.selected = false;
+    ellipse.selected  = true;
+    tail.selected     = true;
 
     try {
       app.executeMenuCommand("makeCompoundShape");
@@ -178,9 +180,13 @@ function createWordBalloon() {
  * @param {number} tailVal  Positive = curves up, negative = curves down
  * @returns {PathItem}
  */
-function balloonTail(doc, anchorVals, tailVal) {
+function balloonTail(doc, anchorVals, tailVal, strokeColor, fillColor) {
   const path    = doc.pathItems.add();
-  path.stroked  = true;
+  path.closed      = true;
+  path.filled      = true;
+  path.stroked     = true;
+  path.strokeColor = strokeColor;
+  path.fillColor   = fillColor;
 
   for (let j = 0; j < anchorVals.anchors.length; j++) {
     const handle = path.pathPoints.add();
@@ -237,15 +243,21 @@ async function loadPageDialogue() {
     return setStatus("dialogue-status", "Could not read script file: " + e.message, "error");
   }
 
-  const pageStart = "Page " + pageNumber;
-  const pageEnd   = "Page " + (pageNumber + 1);
+  // Use line-anchored regex to avoid "Page 2" matching "Page 20"
+  function findPageMarker(text, n, fromIndex = 0) {
+    const re    = new RegExp(`(^|\\r?\\n)Page ${n}(\\r?\\n|$)`);
+    const slice = text.slice(fromIndex);
+    const m     = re.exec(slice);
+    if (!m) return -1;
+    return fromIndex + m.index + m[1].length;
+  }
 
-  const topOfPage    = txtFile.indexOf(pageStart);
-  let   bottomOfPage = txtFile.indexOf(pageEnd);
+  const topOfPage    = findPageMarker(txtFile, pageNumber, 0);
+  let   bottomOfPage = findPageMarker(txtFile, pageNumber + 1, topOfPage === -1 ? 0 : topOfPage + ("Page " + pageNumber).length);
 
   if (topOfPage === -1) {
     return setStatus("dialogue-status",
-      "Could not find \"" + pageStart + "\" in the script.", "error");
+      `Could not find "Page ${pageNumber}" in the script.`, "error");
   }
   if (bottomOfPage === -1) bottomOfPage = txtFile.length;
 
@@ -264,6 +276,10 @@ async function loadPageDialogue() {
     }
   }
 
+  // Guard: require an open document
+  if (!app.documents || app.documents.length === 0) {
+    return setStatus("dialogue-status", "Please open an Illustrator document first.", "error");
+  }
   const doc = app.activeDocument;
 
   // Ensure "Dialogue" layer exists
@@ -284,8 +300,9 @@ async function loadPageDialogue() {
     if (!dialogue) return;
 
     // Stack frames in a column: each 100×100pt, spaced 50pt downward
-    const rectRef = doc.pathItems.rectangle(50 - (count * 50), -150, 100, 100);
-    const frame   = doc.textFrames.areaText(rectRef);
+    // Create via dialogueLayer so items land on the correct layer
+    const rectRef = dialogueLayer.pathItems.rectangle(50 - (count * 50), -150, 100, 100);
+    const frame   = dialogueLayer.textFrames.areaText(rectRef);
 
     frame.contents = dialogue;
     frame.textRange.size = settings.fontSize;
@@ -327,6 +344,7 @@ function initTabs() {
       tabs.forEach(t => {
         t.classList.toggle("active", t === tab);
         t.setAttribute("aria-selected", t === tab ? "true" : "false");
+        t.setAttribute("tabindex", t === tab ? "0" : "-1");
       });
 
       panels.forEach(panel => {

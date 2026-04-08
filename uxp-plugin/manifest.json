@@ -23,7 +23,7 @@
     }
   ],
   "requiredPermissions": {
-    "localFileSystem": "fullAccess",
+    "localFileSystem": "request",
     "ipc": {
       "enablePluginCommunication": false
     }
