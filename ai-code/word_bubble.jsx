@@ -51,6 +51,10 @@
     alert("No line found in selection.\nSelect a text frame AND a line.");
     return;
   }
+  if (linePath.pathPoints.length < 2) {
+    alert("The selected line needs at least 2 points.\nDraw a simple two-point line.");
+    return;
+  }
 
   // --- Create the balloon ellipse around the text frame ---
   newEllipse = doc.activeLayer.pathItems.ellipse(
@@ -119,9 +123,11 @@
     return;
   }
 
-  // Select both the ellipse and the tail, then make a compound shape
+  // Deselect source objects so only the new balloon shapes go into the compound merge
+  tf.selected       = false;
+  linePath.selected = false;
   newEllipse.selected = true;
-  linez.selected = true;
+  linez.selected      = true;
 
   try {
     // makeCompoundShape merges the ellipse and tail into a single editable compound shape.
@@ -140,7 +146,11 @@
   // -------------------------------------------------------------------------
   function balloonWithTail(anchorVals, tailVal) {
     linez = doc.pathItems.add();
-    linez.stroked = true;
+    linez.closed      = true;
+    linez.filled      = true;
+    linez.stroked     = true;
+    linez.strokeColor = myBlack;
+    linez.fillColor   = myWhite;
 
     for (var j = 0; j < anchorVals.anchors.length; j++) {
       var handle = linez.pathPoints.add();

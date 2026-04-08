@@ -67,6 +67,11 @@ if (pageRequest === null || pageRequest === "") {
   exit();
 }
 var pageNumber    = parseInt(pageRequest, 10);
+if (isNaN(pageNumber) || pageNumber < 1) {
+  alert("Please enter a valid page number (1 or greater).");
+  //@ts-ignore
+  exit();
+}
 var pageNumberEnd = pageNumber + 1;
 
 // --- Build path to script.txt ---
@@ -99,14 +104,21 @@ var txtFile = scriptFile.read();
 scriptFile.close();
 
 // --- Slice out the target page section ---
-var pageStart = "Page " + pageNumber;
-var pageEnd   = "Page " + pageNumberEnd;
+// Use line-anchored regex to avoid "Page 2" matching "Page 20".
+function findPageMarker(text, n, fromIndex) {
+  var re    = new RegExp("(^|\\r?\\n)Page " + n + "(\\r?\\n|$)");
+  var slice = text.slice(fromIndex || 0);
+  var m     = re.exec(slice);
+  if (m === null) { return -1; }
+  // Return position adjusted for the leading newline captured in group 1
+  return (fromIndex || 0) + m.index + m[1].length;
+}
 
-var topOfPage    = txtFile.search(pageStart);
-var bottomOfPage = txtFile.search(pageEnd);
+var topOfPage    = findPageMarker(txtFile, pageNumber, 0);
+var bottomOfPage = findPageMarker(txtFile, pageNumberEnd, topOfPage === -1 ? 0 : topOfPage + ("Page " + pageNumber).length);
 
 if (topOfPage === -1) {
-  alert("Could not find \"" + pageStart + "\" in the script file.\n" +
+  alert("Could not find \"Page " + pageNumber + "\" in the script file.\n" +
         "Check that the page marker matches the format: \"Page 1\", \"Page 2\", etc.");
   //@ts-ignore
   exit();
@@ -166,8 +178,12 @@ function addDialogue(text, index) {
   var top  = 50 - (index * 50);
   var left = -150;
 
+  // Create items on the Dialogue layer, not whatever happens to be active
+  var previousLayer = doc.activeLayer;
+  doc.activeLayer   = dialogueLayer;
   var rectRef     = doc.pathItems.rectangle(top, left, 100, 100);
   var areaTextRef = doc.textFrames.areaText(rectRef);
+  doc.activeLayer = previousLayer;
 
   areaTextRef.contents = text;
   areaTextRef.textRange.size = FONT_SIZE;

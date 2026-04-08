@@ -21,7 +21,7 @@ if (app.documents.length === 0) {
 }
 
 var pageName     = app.activeDocument.name;
-var nameShorten  = pageName.replace(".psd", "");
+var nameShorten  = pageName.replace(/\.psd$/i, "");
 
 var docFolder    = new File(app.activeDocument.path);
 var docFolderStr = docFolder.toString();
