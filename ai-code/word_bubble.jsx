@@ -1,1 +1,164 @@
-﻿//var dialogueTest = "But don't you see? This could blow up the whole city!";// NOTE: YOU MUST HAVE SELECTED A TEXT FRAME OF DIALOGUE AND A LINE FOR THIS TO WORK.#target illustratorvar myBlack = new GrayColor();myBlack.gray = 100var myWhite = new GrayColor();myWhite.gray = 0;var newEllipse;var linez;if ( app.documents.length > 0 ) {    var doc = app.activeDocument;    //var artLayer = doc.layers[0];    var selectedItems = app.activeDocument.selection        if(selectedItems.length > 0){        //if selection includes a textFrame        for (i = 0; i < selectedItems.length; i++ ){            if(selectedItems[i].typename == "TextFrame"){                var tf = selectedItems[i];                $.writeln("tf position: " + tf.position);                $.writeln("tf width: " + tf.height);                                newEllipse = doc.activeLayer.pathItems.ellipse((tf.position[1] + 10), (tf.position[0] - 10), tf.width + 10, tf.height + 10, false, true );                 //$.writeln("x pos: " + (tf.position[0] - 5) +  ", y pos: " + (tf.position[1] + 5));                newEllipse.stroked = true;                                newEllipse.strokeColor = myBlack;                newEllipse.fillColor = myWhite;                //$.writeln("stroke Color: " + newEllipse.strokeColor.grayColor);            } else if(selectedItems[i].typename == "PathItem")  {                var pointEnd = selectedItems[i].pathPoints[1].anchor;                $.writeln("pointEnd" + pointEnd + "\n");                var pointBegin = selectedItems[i].pathPoints[0].anchor;                $.writeln("pointBegin = " + pointBegin + "\n");        var upperLeft = {        "anchors": [            [pointEnd[0]+2, pointEnd[1]+2],            [pointBegin[0], pointBegin[1]],            [pointEnd[0]-2, pointEnd[1]-2]        ]    };    var upperRight = {        "anchors": [            [pointEnd[0]-2, pointEnd[1]+2],            [pointBegin[0], pointBegin[1]],            [pointEnd[0]+2, pointEnd[1]-2]        ]    };    var lowerLeft = upperRight;    var lowerRight = upperLeft;        //var linez;    //var ellipse;        //CREATE ELLIPSE HERE SO VARIABLE IS MORE GLOBAL...         // IF BALLOON TAIL IS UPPER LEFT    if (pointEnd[0] > pointBegin[0] && pointEnd[1] < pointBegin[1] ) {        $.writeln("UPPER LEFT!\n");        balloonWithTail(upperLeft, 50);    // ELSE IF UPPER RIGHT    //BUG,  CRASHES ILLUSTRATOR, DON'T KNOW WHY.    // WORKS IF YOU STEP INTO IT.    } else if(pointEnd[0] < pointBegin[0] && pointEnd[1] < pointBegin[1]){        $.writeln("upper right!");        balloonWithTail(upperRight, 50);    // ELSE IF LOWER LEFT    } else if(pointEnd[0] > pointBegin[0] && pointEnd[1] > pointBegin[1]){        $.writeln("lower left");        balloonWithTail(lowerLeft, -50);    // ELSE IF LOWER RIGHT    } else if (pointEnd[0] < pointBegin[0] && pointEnd[1] > pointBegin[1]) {       $.writeln("lower right");       balloonWithTail(lowerRight, -50);            } else { alert("this line is an anomoly, most likely a straight line.");    }     }    }    //    newEllipse.selected = true;    linez.selected = true;    //Carlos, you are a genius! - run the action MakeCompoundShape. A workaround for the lack for a way to call it within JS.    app.doScript ("makeCompoundShape","ComicActions");         //app.activeDocument.selection. (app.activeDocument.selection, Layer.name["Bubbles"] );    //copy selection    //cut selection    //select layer Bubbles    //paste in place    } }//EX: balloonWithTail(lowerLeft, -50);function balloonWithTail(anchorVals, tailVal){        var data = anchorVals;           // CREATE BALLOON TAIL        linez = doc.pathItems.add();         linez.stroked = true;        // loop thru the data.anchors        for(var i in data.anchors){            var handle = linez.pathPoints.add();            handle.anchor = data.anchors[i];            // the current data.anchor's handle                   // if it's not the first or the last...whatever, it's only 3 points, so just say 2            // THIS POINT IS THE END OF THE BALLOON TAIL            if(i == 0) {                var innerArray = data.anchors[0];                handle.rightDirection = [innerArray[0], innerArray[1]+(tailVal)];                $.writeln("point 0 = " + innerArray.rightDirection );                handle.leftDirection = [innerArray[0], innerArray[1]+(tailVal)]; //data.anchors[i];                          handle.pointType.SMOOTH;            } else if(i == 2){                var innerArray = data.anchors[2];                handle.rightDirection = [innerArray[0], innerArray[1]+(tailVal)];                //alert("rightDirection: " + handle.rightDirection);                handle.leftDirection = [innerArray[0], innerArray[1]+(tailVal)]; //data.anchors[i];                //alert("leftDirection: " + handle.leftDirection);                handle.pointType.SMOOTH;            } else {                handle.rightDirection = data.anchors[i];                handle.leftDirection = data.anchors[i];                handle.pointType.CURVE;            }        }     }//other useful spots: // https://stackoverflow.com/questions/4840595/how-do-i-get-the-position-of-the-selected-illustrator-pathitem-in-pixels-using
+#target illustrator
+
+// word_bubble.jsx
+// Creates a word balloon from a selected TextFrame + a selected PathItem (line).
+// The line defines the tail direction and endpoint. The text frame defines balloon size.
+//
+// Usage: Select both a text frame and a single-line path, then run this script.
+// Requirements: No external action set required.
+
+(function () {
+
+  var myBlack = new GrayColor();
+  myBlack.gray = 100;
+
+  var myWhite = new GrayColor();
+  myWhite.gray = 0;
+
+  var newEllipse;
+  var linez;
+
+  if (app.documents.length === 0) {
+    alert("No document is open.");
+    return;
+  }
+
+  var doc = app.activeDocument;
+  var selectedItems = doc.selection;
+
+  if (!selectedItems || selectedItems.length === 0) {
+    alert("Nothing selected.\nSelect a text frame AND a line, then run the script.");
+    return;
+  }
+
+  // Separate the two required items from the selection
+  var tf = null;
+  var linePath = null;
+
+  for (var i = 0; i < selectedItems.length; i++) {
+    if (selectedItems[i].typename === "TextFrame") {
+      tf = selectedItems[i];
+    } else if (selectedItems[i].typename === "PathItem") {
+      linePath = selectedItems[i];
+    }
+  }
+
+  if (!tf) {
+    alert("No text frame found in selection.\nSelect a text frame AND a line.");
+    return;
+  }
+  if (!linePath) {
+    alert("No line found in selection.\nSelect a text frame AND a line.");
+    return;
+  }
+
+  // --- Create the balloon ellipse around the text frame ---
+  newEllipse = doc.activeLayer.pathItems.ellipse(
+    tf.position[1] + 10,   // top
+    tf.position[0] - 10,   // left
+    tf.width + 20,         // width (10px padding each side)
+    tf.height + 20,        // height
+    false,
+    true
+  );
+  newEllipse.stroked = true;
+  newEllipse.strokeColor = myBlack;
+  newEllipse.fillColor = myWhite;
+
+  // --- Determine tail direction from the line endpoints ---
+  var pointBegin = linePath.pathPoints[0].anchor;
+  var pointEnd   = linePath.pathPoints[1].anchor;
+
+  // Anchor points for each tail direction. The tail narrows to a point at pointEnd
+  // and widens at the balloon edge (pointBegin side).
+  var upperLeft = {
+    anchors: [
+      [pointEnd[0] + 2, pointEnd[1] + 2],
+      [pointBegin[0], pointBegin[1]],
+      [pointEnd[0] - 2, pointEnd[1] - 2]
+    ]
+  };
+
+  var upperRight = {
+    anchors: [
+      [pointEnd[0] - 2, pointEnd[1] + 2],
+      [pointBegin[0], pointBegin[1]],
+      [pointEnd[0] + 2, pointEnd[1] - 2]
+    ]
+  };
+
+  // Note: lowerLeft and lowerRight are mirrors of upperRight/upperLeft respectively,
+  // but the tailVal sign is flipped (-50) so the curve bows the other way.
+  var lowerLeft = {
+    anchors: [
+      [pointEnd[0] - 2, pointEnd[1] + 2],
+      [pointBegin[0], pointBegin[1]],
+      [pointEnd[0] + 2, pointEnd[1] - 2]
+    ]
+  };
+
+  var lowerRight = {
+    anchors: [
+      [pointEnd[0] + 2, pointEnd[1] + 2],
+      [pointBegin[0], pointBegin[1]],
+      [pointEnd[0] - 2, pointEnd[1] - 2]
+    ]
+  };
+
+  // Directional logic: compare endpoint coordinates to determine quadrant
+  if (pointEnd[0] > pointBegin[0] && pointEnd[1] < pointBegin[1]) {
+    balloonWithTail(upperLeft, 50);
+  } else if (pointEnd[0] < pointBegin[0] && pointEnd[1] < pointBegin[1]) {
+    balloonWithTail(upperRight, 50);
+  } else if (pointEnd[0] > pointBegin[0] && pointEnd[1] > pointBegin[1]) {
+    balloonWithTail(lowerLeft, -50);
+  } else if (pointEnd[0] < pointBegin[0] && pointEnd[1] > pointBegin[1]) {
+    balloonWithTail(lowerRight, -50);
+  } else {
+    alert("The line appears to be perfectly straight (horizontal or vertical).\nTry a diagonal line instead.");
+    return;
+  }
+
+  // Select both the ellipse and the tail, then make a compound shape
+  newEllipse.selected = true;
+  linez.selected = true;
+
+  try {
+    // makeCompoundShape merges the ellipse and tail into a single editable compound shape.
+    // This no longer requires an external "ComicActions" action set.
+    app.executeMenuCommand("makeCompoundShape");
+  } catch (e) {
+    alert("Could not create compound shape automatically.\n" +
+          "Tip: Select the ellipse and tail manually, then use Object > Compound Path > Make.");
+  }
+
+
+  // -------------------------------------------------------------------------
+  // balloonWithTail(anchorVals, tailVal)
+  //   anchorVals - object with .anchors array of 3 [x,y] points
+  //   tailVal    - bezier handle offset; positive curves up, negative curves down
+  // -------------------------------------------------------------------------
+  function balloonWithTail(anchorVals, tailVal) {
+    linez = doc.pathItems.add();
+    linez.stroked = true;
+
+    for (var j = 0; j < anchorVals.anchors.length; j++) {
+      var handle = linez.pathPoints.add();
+      handle.anchor = anchorVals.anchors[j];
+
+      if (j === 0 || j === 2) {
+        // Tip and base edge points — smooth curve handles offset vertically
+        var pt = anchorVals.anchors[j];
+        handle.rightDirection = [pt[0], pt[1] + tailVal];
+        handle.leftDirection  = [pt[0], pt[1] + tailVal];
+        handle.pointType = PointType.SMOOTH;
+      } else {
+        // Middle point (the tip of the tail) — corner point, no curvature
+        handle.rightDirection = anchorVals.anchors[j];
+        handle.leftDirection  = anchorVals.anchors[j];
+        handle.pointType = PointType.CORNER;
+      }
+    }
+  }
+
+}());
