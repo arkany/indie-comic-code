@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Indie Comic</title>
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- Tab navigation -->
+    <div class="tabs" role="tablist">
+      <button class="tab active" id="tab-btn-balloon" data-tab="balloon"
+              role="tab" aria-selected="true" aria-controls="tab-balloon" tabindex="0">Balloon</button>
+      <button class="tab" id="tab-btn-dialogue" data-tab="dialogue"
+              role="tab" aria-selected="false" aria-controls="tab-dialogue" tabindex="-1">Dialogue</button>
+      <button class="tab" id="tab-btn-settings" data-tab="settings"
+              role="tab" aria-selected="false" aria-controls="tab-settings" tabindex="-1">Settings</button>
+    </div>
+
+    <!-- ── TAB: Word Balloon ────────────────────────────── -->
+    <div id="tab-balloon" class="tab-panel active" role="tabpanel" aria-labelledby="tab-btn-balloon">
+      <p class="instructions">
+        Select a <strong>text frame</strong> and a <strong>line</strong> in Illustrator,
+        then click the button below.
+      </p>
+
+      <button id="btn-balloon" class="btn-primary">Create Word Balloon</button>
+
+      <p id="balloon-status" class="status"></p>
+    </div>
+
+    <!-- ── TAB: Page Dialogue ───────────────────────────── -->
+    <div id="tab-dialogue" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-dialogue" hidden>
+      <label class="field-label" for="page-number">Page number</label>
+      <input id="page-number" type="number" class="text-input" value="1" min="1" />
+
+      <label class="field-label">Script file</label>
+      <div class="file-row">
+        <span id="script-path-display" class="file-path">(none selected)</span>
+        <button id="btn-browse" class="btn-secondary">Browse</button>
+      </div>
+
+      <button id="btn-load-dialogue" class="btn-primary">Load Dialogue</button>
+
+      <p id="dialogue-status" class="status"></p>
+    </div>
+
+    <!-- ── TAB: Settings ────────────────────────────────── -->
+    <div id="tab-settings" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-settings" hidden>
+      <label class="field-label" for="font-name">Font name</label>
+      <input id="font-name" type="text" class="text-input" value="ComicGeek"
+             placeholder="e.g. ComicGeek, ArialMT" />
+
+      <label class="field-label" for="font-size">Font size (pt)</label>
+      <input id="font-size" type="number" class="text-input" value="7" min="4" max="72" />
+
+      <button id="btn-save-settings" class="btn-secondary">Save Settings</button>
+
+      <p id="settings-status" class="status"></p>
+    </div>
+
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "id": "com.indiecomic.lettering",
+  "name": "Indie Comic Lettering",
+  "version": "1.0.0",
+  "manifestVersion": 5,
+  "host": [
+    {
+      "app": "AI",
+      "minVersion": "26.0"
+    }
+  ],
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "mainPanel",
+      "label": {
+        "default": "Indie Comic"
+      },
+      "main": "index.html",
+      "minimumSize": { "width": 200, "height": 300 },
+      "preferredSize": { "width": 240, "height": 480 },
+      "maximumSize": { "width": 600, "height": 800 }
+    }
+  ],
+  "requiredPermissions": {
+    "localFileSystem": "request",
+    "ipc": {
+      "enablePluginCommunication": false
+    }
+  }
+}

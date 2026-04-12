@@ -2,98 +2,110 @@
 
 Hey there True Believers,
 
-tl;dr - Here's a few ExtendScripts and Actions to expedite the comic creation process. 
+tl;dr - A few scripts and a modern UXP plugin to expedite the comic creation process.
 
-Making an independent comic book is a ton of work. Writing it, drawing it, inking it, lettering it, getting it print ready, making it ready for Comixology, converting it to PDF - it's like you're an adult with a lot of work to do. 
+Making an independent comic book is a ton of work. Writing it, drawing it, inking it, lettering it, getting it print ready, making it ready for Comixology, converting it to PDF - it's like you're an adult with a lot of work to do.
 
-**I don't have that kind of time.** I make my comic in my mornings, nights and weekends, so I wanted to find ways to speed it up anywhere I can. 
+**I don't have that kind of time.** I make my comic in my mornings, nights and weekends, so I wanted to find ways to speed it up anywhere I can.
 
 Thusly, here are some scripts to help speed that process up. Some may be .atn, some .jsx, and all through *sheer tomhackery*.
 
-I am/was/will be making these to help myself. Hopefully, any independent comic creator could speed up their workflow.
+---
 
+## Legacy ExtendScript Scripts
 
-## Photoshop Scripts
+These `.jsx` files run via **File > Scripts > Other Script** in Illustrator or Photoshop. No installation required — just point the app at the file.
 
-**Script 01** - *Place Illustrator Lettering file into Photoshop as a Smart Object*
+Tested with Illustrator 2025 (29.x) and Photoshop 2025 (26.x).
 
-It's easier to draw vectors in Illustrator. Plus when I want to edit the Illustrator file, I can just double click it and it opens in Illustrator.
+### Photoshop: `ps-code/01-placeAiInPsd.jsx`
 
-## Illustrator Scripts
+*Place Illustrator Lettering file into Photoshop as a Smart Object*
 
-**Script 01** - *Pull dialogue for PageX*
+It's easier to draw vectors in Illustrator. Plus when you want to edit the Illustrator file, you can just double-click the Smart Object and it opens directly in Illustrator.
+
+Resolves the `.ai` path automatically from the open PSD filename and the standard project folder layout.
+
+---
+
+### Illustrator: `ai-code/page_dialogue.jsx`
+
+*Pull dialogue for a specific page from your script file*
 
 ![Extract Page Dialogue from Script](_assets/indie-script-ai-01.jpg)
 
-Prompts you for the page number, you get all the dialogue as individual text boxes and removes name and description, etc. Defaults to 'Comic Geek' font by [Blambot](http://blambot.com).
+Prompts for a page number, reads `00-assets/script.txt`, and creates individual text frames for each dialogue line on that page — stripping speaker names and leaving just the text. Defaults to [ComicGeek](https://blambot.com) font by Blambot; falls back to Arial if not installed.
 
+---
 
-**Script 02** - *Create a word balloon from a single line & a textframe*
+### Illustrator: `ai-code/word_bubble.jsx`
 
-![Word Bubble](_assets/indie-script-ai-02.jpg) 
+*Create a word balloon from a text frame + a line*
 
-This is strictly for normal word balloons. The balloon takes the size of the text frame and generates a circle, based on the perimeter. Then it takes the line and creates an arched balloon tail. Then it creates a compound shape from those two objects, thereby making it easy to adjust later.
+![Word Bubble](_assets/indie-script-ai-02.jpg)
 
-**Script 03**  - *Create rough bubble*
+Select both a text frame (the dialogue) and a single line (the tail direction), then run the script. It:
 
-TBD
+1. Creates an ellipse sized to the text frame (with padding)
+2. Creates a curved tail from the line
+3. Merges them into a compound shape for easy editing
 
-## File Structure
-All the scripts I've made thus far are dependent on the file sturure. I sort my directory as such:
+Works in all four tail directions (upper-left, upper-right, lower-left, lower-right). No external action sets required.
 
-_assets
- - Issue X Script.pdf
- - Issue X Script.txt
- - ...
+---
 
-00-Scan
- - 000-front-cover.tif
- - 01.tif
- - ...
+## Modern UXP Plugin
 
-01-PSD
- - 000-front-cover.psd
- - 000-front-inside.psd
- - 01.psd
- - ...
+The `uxp-plugin/` folder contains a full **UXP panel plugin** for Illustrator that exposes all of the above functionality via a proper in-app UI panel (Window > Extensions > Indie Comic). It is self-contained and can be extracted into its own repository.
 
-02-Lettering
- -  01.ai
- - ...
+See [`uxp-plugin/README.md`](uxp-plugin/README.md) for setup instructions.
 
-03-Coloring Flat Builds
- - ...
+---
 
-04-TIF-output
-- ...
+## Required File Structure
 
-05-Comixology-output
- - 000-font-cover.jpg
- - ...
+The legacy ExtendScript tools (`ps-code/01-placeAiInPsd.jsx` and `ai-code/page_dialogue.jsx`) depend on this project folder layout. The **UXP plugin does not require a fixed layout** — it uses a file picker to locate `script.txt` directly.
 
-06-PDF
- - Comixology-version.pdf
- - Print-version.pdf
-...
+```
+<your project>/
+├── 00-assets/
+│   ├── Issue X Script.pdf
+│   └── script.txt          ← plain-text script, used by page_dialogue
+├── 00-Scan/
+│   ├── 000-front-cover.tif
+│   └── 01.tif
+├── 01-PSD/
+│   ├── 000-front-cover.psd
+│   └── 01.psd
+├── 02-Lettering/
+│   └── 01.ai               ← matched by name to the open PSD
+├── 03-Coloring Flat Builds/
+├── 04-TIF-output/
+├── 05-Comixology-output/
+└── 06-PDF/
+```
 
-## AI Action Todos 
- - Update Script 01: Currently, it adds the text from the requested page. Let's create new page, place image from psd, THEN add text from matching page.
+### Script file format (`script.txt`)
 
-## PS Action Todos
-- Format for LithoNinja
-- Format for PrintNinja
+```
+Page 1
+CHARACTER: Dialogue line here.
+CAPTION: Narration here.
 
-## Script Todos
-- <del>Pull dialogue for Page X<del>
-- Convert TIFs to PDF
-- Convert Comixology to PDF
-- Comixology Submit Template Collection
+Page 2
+CHARACTER: More dialogue.
+```
 
-## General Todo
-- Move Todos to Github Issues
-- Add Actions
-- Link to other Actions online
-- Convert Scripts into Plugins
-- Template: Starter Bubbles for Illustrator
-- ???
-- Profit
+Page markers must be `Page N` (capital P, space, number). Dialogue lines must contain a colon; everything after the colon becomes the text frame content.
+
+---
+
+## Todos
+
+- [x] Pull dialogue for Page X
+- [ ] Convert TIFs to PDF
+- [ ] Convert Comixology to PDF
+- [ ] Comixology Submit Template Collection
+- [ ] Add GitHub Issues for remaining todos
+- [ ] Link to other comic Actions online
+- [ ] Template: Starter Bubbles for Illustrator
