@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- .debug enables remote debugging of the CEP panel's Chromium frame.
+     Connect to http://localhost:8088 in any Chromium-based browser to
+     open DevTools for the panel. Only present during development — do not
+     include this file in a packaged/distributed extension. -->
+<ExtensionList>
+  <Extension Id="com.indiecomic.lettering.panel">
+    <HostList>
+      <Host Name="ILST" Port="8088" />
+    </HostList>
+  </Extension>
+</ExtensionList>

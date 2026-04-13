@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionManifest Version="7.0"
+  ExtensionBundleId="com.indiecomic.lettering"
+  ExtensionBundleVersion="1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <ExtensionList>
+    <Extension Id="com.indiecomic.lettering.panel" Version="1.0.0" />
+  </ExtensionList>
+
+  <ExecutionEnvironment>
+    <HostList>
+      <!-- ILST = Illustrator; [26.0, 99.9] covers 2022 and later -->
+      <Host Name="ILST" Version="[26.0, 99.9]" />
+    </HostList>
+    <LocaleList>
+      <Locale Code="All" />
+    </LocaleList>
+    <RequiredRuntimeList>
+      <!-- CEP 11 ships with CC 2021+ -->
+      <RequiredRuntime Name="CSXS" Version="11.0" />
+    </RequiredRuntimeList>
+  </ExecutionEnvironment>
+
+  <DispatchInfoList>
+    <Extension Id="com.indiecomic.lettering.panel">
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <!-- ScriptPath is evaluated in Illustrator on panel load;
+               functions defined here are available via evalScript() -->
+          <ScriptPath>./jsx/hostscript.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--allow-running-insecure-content</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Menu>Indie Comic</Menu>
+          <Geometry>
+            <PreferredSize>
+              <Width>240</Width>
+              <Height>480</Height>
+            </PreferredSize>
+            <MinSize>
+              <Width>200</Width>
+              <Height>300</Height>
+            </MinSize>
+            <MaxSize>
+              <Width>600</Width>
+              <Height>800</Height>
+            </MaxSize>
+          </Geometry>
+          <Icons>
+            <!-- Optional: add panel-icon.png at 23x23 and 48x48 -->
+          </Icons>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+  </DispatchInfoList>
+
+</ExtensionManifest>

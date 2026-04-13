@@ -1,0 +1,184 @@
+/* Indie Comic CEP Panel — styles
+   CEP panels run in a Chromium Embedded Framework (CEF) browser, so standard
+   CSS works. We default to Illustrator's dark theme colors and use the
+   .theme-light class (applied by main.js via getHostEnvironment) for the light theme. */
+
+:root {
+  /* Dark theme (Illustrator default) */
+  --bg:        #2c2c2c;
+  --surface:   #3d3d3d;
+  --border:    #555;
+  --text:      #e0e0e0;
+  --text-dim:  #999;
+  --accent:    #78a9ff;
+  --success:   #6dbe6d;
+  --error:     #f08080;
+  --radius:    4px;
+  --gap:       8px;
+}
+
+.theme-light {
+  --bg:       #f0f0f0;
+  --surface:  #ffffff;
+  --border:   #c0c0c0;
+  --text:     #1e1e1e;
+  --text-dim: #666;
+  --accent:   #0f5fcc;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Adobe Clean', Arial, sans-serif;
+  font-size: 12px;
+  background: var(--bg);
+  color: var(--text);
+  /* Prevent text selection flash on button clicks */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: var(--gap);
+  gap: var(--gap);
+  overflow: hidden;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.tab {
+  flex: 1;
+  padding: 6px 4px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: inherit;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tab:hover  { color: var(--text); }
+.tab:focus  { outline: 1px solid var(--accent); outline-offset: -1px; }
+
+.tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ── Tab panels ── */
+.tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--gap) * 1.25);
+  flex: 1;
+  overflow-y: auto;
+}
+
+.tab-panel[hidden] { display: none; }
+
+/* ── Form elements ── */
+.field-label {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.text-input {
+  width: 100%;
+  padding: 5px 7px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+}
+
+.text-input:focus { border-color: var(--accent); }
+
+/* Remove number input spinners — cleaner in a narrow panel */
+.text-input[type="number"]::-webkit-inner-spin-button,
+.text-input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+/* ── File picker row ── */
+.file-row {
+  display: flex;
+  gap: var(--gap);
+  align-items: center;
+}
+
+.file-path {
+  flex: 1;
+  font-size: 10px;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: default;
+}
+
+/* ── Buttons ── */
+.btn-primary,
+.btn-secondary {
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  width: 100%;
+}
+
+.btn-primary:hover  { opacity: 0.85; }
+.btn-primary:active { opacity: 0.7; }
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.btn-secondary:hover  { border-color: var(--accent); }
+.btn-secondary:active { opacity: 0.7; }
+
+/* ── Status messages ── */
+.status {
+  font-size: 11px;
+  min-height: 16px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.status.success { color: var(--success); }
+.status.error   { color: var(--error); }
+
+/* ── Instructions text ── */
+.instructions {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.instructions strong { color: var(--text); }
