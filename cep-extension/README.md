@@ -20,18 +20,7 @@ Requires Illustrator 2022 (26.0) or later. CEP 11, which ships with CC 2021+.
 
 ## Setup
 
-### 1. Get CSInterface.js
-
-CSInterface is the Adobe-provided bridge between the panel and the host app.
-Download it and place it at `js/CSInterface.js`:
-
-```
-https://github.com/Adobe-CEP/CEP-Resources/blob/master/CEP_11.x/CSInterface.js
-```
-
-(Raw download link — click "Raw" on that page, then save as `CSInterface.js`.)
-
-### 2. Enable developer mode
+### 1. Enable developer mode
 
 CEP normally requires extensions to be signed. For development, enable player debug mode:
 
